@@ -1,3 +1,14 @@
+```text
+
+  ___                           __
+ /                 |           /                   /
+(___  ___  ___  ___| ___      (___  ___  ___         ___  ___
+|    |___)|___)|   )|___          )|___)|   ) \  )| |    |___)
+|    |__  |__  |__/  __/       __/ |__  |      \/ | |__  |__
+
+
+```
+
 ## Your mission:
 
 A client needs to know what is happening on the social networks. All of them. Right now.
@@ -14,6 +25,8 @@ Because these social networks are so webscale, they don't always respond predict
 
 Also, sometimes they will respond with an error. This error will not be valid JSON. Life's hard sometimes.
 
+
+### Requirements
 The client needs to be able to run your thing, then issue the command:
 
 ```

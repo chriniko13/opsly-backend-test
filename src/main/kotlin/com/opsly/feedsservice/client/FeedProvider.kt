@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.toMono
 import java.time.Duration
 
@@ -14,7 +15,7 @@ abstract class FeedProvider<R>(
         val cache: FeedProviderCache) {
 
     protected fun getRequest(url: String, retries: Long, timeoutMs: Long, cached: Boolean): Mono<R> {
-        val f: Mono<R> = webClient
+        var f: Mono<R> = webClient
                 .get()
                 .uri(url)
                 .exchange()
@@ -23,9 +24,11 @@ abstract class FeedProvider<R>(
                 .map { it.bodyToMono(object : ParameterizedTypeReference<R>() {}) }
                 .flatMap { it }
 
-        return if (cached) {
-            f.doOnNext { cacheResult(it as Any) }
-        } else f
+        if (cached) {
+            f = f.doOnNext { cacheResult(it as Any) }
+        }
+
+        return f.subscribeOn(Schedulers.boundedElastic())
     }
 
     protected inline fun <reified R> recoverFromCacheOrEmpty(): Mono<List<R>> {
@@ -41,7 +44,7 @@ abstract class FeedProvider<R>(
     private fun jsonNode(it: R?) = mapper.readTree(mapper.writeValueAsBytes(it))
 
     // --- public ---
-    fun consumeAsJson(): Mono<JsonNode> = consume().map { jsonNode(it) }
+    fun consumeAsJson(): Mono<JsonNode> = consume().publishOn(Schedulers.parallel()).map { jsonNode(it) }
 
     abstract fun feedName(): String
 
