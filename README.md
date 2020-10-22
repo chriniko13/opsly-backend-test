@@ -9,7 +9,9 @@
 
 ```
 
-## Your mission:
+###### Assignee: nick.christidis@yahoo.com
+
+### Description
 
 A client needs to know what is happening on the social networks. All of them. Right now.
 
@@ -46,3 +48,15 @@ This should be a quick little task, but the client is paying us A Billion dollar
 Don't forget to `git push` regularly.
 
 Have fun!
+
+
+### Run service
+* Execute: `mvn spring-boot:run`
+
+
+### Unit tests
+* Execute: `mvn clean test`
+
+
+### Integration tests (+ unit tests)
+* Execute: `mvn clean verify`
