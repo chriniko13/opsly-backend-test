@@ -73,10 +73,33 @@
         </dependency>
 
         <dependency>
+            <groupId>com.nhaarman.mockitokotlin2</groupId>
+            <artifactId>mockito-kotlin</artifactId>
+            <version>2.2.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- start: mock external services which we communicate via http -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver</artifactId>
+            <version>4.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- end: mock external services which we communicate via http -->
+
 
     </dependencies>
 

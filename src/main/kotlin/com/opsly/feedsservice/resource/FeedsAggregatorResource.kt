@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 
 @RestController
-class FeedsAggregatorResource(@Autowired val service: FeedsAggregatorService) {
+class FeedsAggregatorResource(@Autowired private val service: FeedsAggregatorService) {
 
     private val log: Logger = LoggerFactory.getLogger(FeedsAggregatorService::class.java)
 

@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Service
-class FeedsAggregatorService(@Autowired val feedProviders: List<FeedProvider<*>>) {
+class FeedsAggregatorService(@Autowired private val feedProviders: List<FeedProvider<*>>) {
 
     fun fetch(): Mono<MutableMap<String, JsonNode>> {
         return Flux.fromIterable(feedProviders)

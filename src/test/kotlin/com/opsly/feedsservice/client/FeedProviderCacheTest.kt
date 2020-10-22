@@ -9,7 +9,7 @@ import java.util.concurrent.locks.LockSupport
 internal class FeedProviderCacheTest {
 
     @Test
-    fun getLatest() {
+    fun getLatestEntryWorksAsExpected() {
 
         // given
         val cache = FeedProviderCache()

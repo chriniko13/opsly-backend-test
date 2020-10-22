@@ -32,7 +32,8 @@ abstract class FeedProvider<R>(
     }
 
     protected inline fun <reified R> recoverFromCacheOrEmpty(): Mono<List<R>> {
-        return cache.getLatestEntry<List<R>>(feedName())
+        return cache
+                .getLatestEntry<List<R>>(feedName())
                 .orElseGet { emptyList() }
                 .toMono()
     }
@@ -44,7 +45,11 @@ abstract class FeedProvider<R>(
     private fun jsonNode(it: R?) = mapper.readTree(mapper.writeValueAsBytes(it))
 
     // --- public ---
-    fun consumeAsJson(): Mono<JsonNode> = consume().publishOn(Schedulers.parallel()).map { jsonNode(it) }
+    fun consumeAsJson(): Mono<JsonNode> {
+        return consume()
+                .publishOn(Schedulers.parallel())
+                .map { jsonNode(it) }
+    }
 
     abstract fun feedName(): String
 
