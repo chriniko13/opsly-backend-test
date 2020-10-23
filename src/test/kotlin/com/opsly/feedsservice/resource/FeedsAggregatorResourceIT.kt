@@ -9,11 +9,8 @@ import com.opsly.feedsservice.client.FacebookFeedProvider
 import com.opsly.feedsservice.client.InstagramFeedProvider
 import com.opsly.feedsservice.client.TwitterFeedProvider
 import org.junit.Rule
-import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
 import org.springframework.beans.factory.annotation.Autowired
@@ -68,6 +65,11 @@ internal class FeedsAggregatorResourceIT {
                         .port(wiremockPort));
 
         wireMockServer.start();
+    }
+
+    @AfterEach
+    fun tearDownEach() {
+        wireMockServer.stop()
     }
 
     @Test

@@ -26,7 +26,7 @@ class FacebookFeedProvider(@Autowired private val webClient: WebClient,
     override fun consume(): Mono<List<FacebookFeed>> {
         return getRequest(url, retries, timeoutMs, cached)
                 .onErrorResume { error ->
-                    log.error("error occurred, message: ${error.message}")
+                    log.warn("error occurred, message: ${error.message}")
                     recoverFromCacheOrEmpty()
                 }
     }

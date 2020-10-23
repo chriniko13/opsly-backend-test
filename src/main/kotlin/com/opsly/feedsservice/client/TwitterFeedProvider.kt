@@ -27,8 +27,7 @@ class TwitterFeedProvider(
     override fun consume(): Mono<List<TwitterFeed>> {
         return getRequest(url, retries, timeoutMs, cached)
                 .onErrorResume { error ->
-
-                    log.error("error occurred, message: ${error.message}")
+                    log.warn("error occurred, message: ${error.message}")
                     recoverFromCacheOrEmpty()
                 }
     }
