@@ -63,3 +63,22 @@ Have fun!
 
 ### Integration tests (+ unit tests)
 * Execute: `mvn clean verify`
+
+
+### Apply mapping feature (check: `feed-aggregator.apply-mapping` in properties file)
+* When set to `true`, then the response is the following:
+    ```json
+    {
+      "facebook": [
+        "Here's some photos of my holiday. Look how much more fun I'm having than you are!",
+        "I am in a hospital. I will not tell you anything about why I am here."
+      ],
+      "instagram": [
+        
+      ],
+      "twitter": [
+        "If you live to be 100, you should make up some fake reason why, just to mess with people... like claim you ate a pinecone every single day.",
+        "STOP TELLING ME YOUR NEWBORN'S WEIGHT AND LENGTH I DON'T KNOW WHAT TO DO WITH THAT INFORMATION."
+      ]
+    }
+    ```

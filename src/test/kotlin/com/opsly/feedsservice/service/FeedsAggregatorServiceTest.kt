@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.opsly.feedsservice.client.FeedProvider
+import com.opsly.feedsservice.mapper.FeedMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,12 +18,20 @@ internal class FeedsAggregatorServiceTest {
     lateinit var mockProvider1: FeedProvider<*>
     lateinit var mockProvider2: FeedProvider<*>
 
+    lateinit var mockFeedMapper1: FeedMapper
+    lateinit var mockFeedMapper2: FeedMapper
+
     @BeforeEach
     fun setup() {
         mockProvider1 = mock()
         mockProvider2 = mock()
 
-        aggregatorService = FeedsAggregatorService(listOf(mockProvider1, mockProvider2))
+        mockFeedMapper1 = mock()
+        mockFeedMapper2 = mock()
+
+        val m = mapOf("feedMapper1" to mockFeedMapper1, "feedMapper2" to mockFeedMapper2)
+
+        aggregatorService = FeedsAggregatorService(listOf(mockProvider1, mockProvider2), m, ObjectMapper(), false)
     }
 
     @Test

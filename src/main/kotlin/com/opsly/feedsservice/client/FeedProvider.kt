@@ -9,7 +9,7 @@ import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.toMono
 import java.time.Duration
 
-abstract class FeedProvider<R>(
+abstract class FeedProvider<R: Any>(
         private val webClient: WebClient,
         private val mapper: ObjectMapper,
         val cache: FeedProviderCache) {
@@ -38,13 +38,13 @@ abstract class FeedProvider<R>(
                 .toMono()
     }
 
-    protected abstract fun consume(): Mono<R>
-
     private fun cacheResult(v: Any) = cache.add(feedName(), v)
 
     private fun jsonNode(it: R?) = mapper.readTree(mapper.writeValueAsBytes(it))
 
     // --- public ---
+    abstract fun consume(): Mono<R>
+
     fun consumeAsJson(): Mono<JsonNode> {
         return consume()
                 .publishOn(Schedulers.parallel())
