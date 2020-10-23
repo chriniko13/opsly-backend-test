@@ -242,8 +242,104 @@ internal class FeedsAggregatorResourceIT {
 
     }
 
-    //TODO first successful, then timeout, but it is cached!
+    @Test
+    fun getFirstCallIsSuccessfulAndCachedSecondCallTimeoutBuyCacheToTheRescue() {
 
+        // given
+        val facebookFeedProvider = applicationContext.getBean(FacebookFeedProvider::class.java)
+        ReflectionTestUtils.setField(facebookFeedProvider, "url", "http://localhost:${wiremockPort}/facebook")
+
+        val twitterFeedProvider = applicationContext.getBean(TwitterFeedProvider::class.java)
+        ReflectionTestUtils.setField(twitterFeedProvider, "url", "http://localhost:${wiremockPort}/twitter")
+
+        val instagramFeedProvider = applicationContext.getBean(InstagramFeedProvider::class.java)
+        ReflectionTestUtils.setField(instagramFeedProvider, "url", "http://localhost:${wiremockPort}/instagram")
+
+
+        wireMockServer.stubFor(get(urlPathMatching("/facebook"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("[{\"name\":\"Some Friend\",\"status\":\"Here's some photos of my holiday. Look how much more fun I'm having than you are!\"}," +
+                                "{\"name\":\"Drama Pig\",\"status\":\"I am in a hospital. I will not tell you anything about why I am here.\"}]")))
+
+
+        wireMockServer.stubFor(get(urlPathMatching("/twitter"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("[{\"username\":\"@GuyEndoreKaiser\",\"tweet\":\"If you live to be 100, you should make up some fake reason why, just to mess with people... like claim you ate a pinecone every single day.\"}," +
+                                "{\"username\":\"@mikeleffingwell\",\"tweet\":\"STOP TELLING ME YOUR NEWBORN'S WEIGHT AND LENGTH I DON'T KNOW WHAT TO DO WITH THAT INFORMATION.\"}]")))
+
+
+        wireMockServer.stubFor(get(urlPathMatching("/instagram"))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withBody("404 page not found")))
+
+        val responseEntity = restTemplate.getForEntity<String>("http://localhost:${port}/", String::class.java)
+
+        assertEquals(HttpStatus.OK, responseEntity.statusCode)
+
+        JSONAssert.assertEquals(
+
+                "{\"instagram\":[]," +
+                        "\"facebook\":[" +
+                        "{\"name\":\"Some Friend\",\"status\":\"Here's some photos of my holiday. Look how much more fun I'm having than you are!\"}," +
+                        "{\"name\":\"Drama Pig\",\"status\":\"I am in a hospital. I will not tell you anything about why I am here.\"}]," +
+                        "\"twitter\":[{\"username\":\"@GuyEndoreKaiser\",\"tweet\":\"If you live to be 100, you should make up some fake reason why, just to mess with people... like claim you ate a pinecone every single day.\"}," +
+                        "{\"username\":\"@mikeleffingwell\",\"tweet\":\"STOP TELLING ME YOUR NEWBORN'S WEIGHT AND LENGTH I DON'T KNOW WHAT TO DO WITH THAT INFORMATION.\"}]}",
+
+                responseEntity.body,
+
+                JSONCompareMode.STRICT
+        )
+
+
+
+        // when
+        wireMockServer.stubFor(get(urlPathMatching("/facebook"))
+                .willReturn(aResponse()
+                        .withFixedDelay(7000)
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("[{\"name\":\"Some Friend\",\"status\":\"Here's some photos of my holiday. Look how much more fun I'm having than you are!\"}," +
+                                "{\"name\":\"Drama Pig\",\"status\":\"I am in a hospital. I will not tell you anything about why I am here.\"}]")))
+
+
+        wireMockServer.stubFor(get(urlPathMatching("/twitter"))
+                .willReturn(aResponse()
+                        .withStatus(500)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("down for upgrade")))
+
+
+        wireMockServer.stubFor(get(urlPathMatching("/instagram"))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withBody("404 page not found")))
+
+        val responseEntitySecondCall = restTemplate.getForEntity<String>("http://localhost:${port}/", String::class.java)
+
+
+
+        // then
+        assertEquals(HttpStatus.OK, responseEntitySecondCall.statusCode)
+
+        JSONAssert.assertEquals(
+
+                "{\"instagram\":[]," +
+                        "\"facebook\":[" +
+                        "{\"name\":\"Some Friend\",\"status\":\"Here's some photos of my holiday. Look how much more fun I'm having than you are!\"}," +
+                        "{\"name\":\"Drama Pig\",\"status\":\"I am in a hospital. I will not tell you anything about why I am here.\"}]," +
+                        "\"twitter\":[{\"username\":\"@GuyEndoreKaiser\",\"tweet\":\"If you live to be 100, you should make up some fake reason why, just to mess with people... like claim you ate a pinecone every single day.\"}," +
+                        "{\"username\":\"@mikeleffingwell\",\"tweet\":\"STOP TELLING ME YOUR NEWBORN'S WEIGHT AND LENGTH I DON'T KNOW WHAT TO DO WITH THAT INFORMATION.\"}]}",
+
+                responseEntitySecondCall.body,
+
+                JSONCompareMode.STRICT
+        )
+    }
 
 
 }
